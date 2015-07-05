@@ -1,13 +1,14 @@
 # Soundcloud Player
 
-My motivation behind this player was to build a lightweight, modern, non-jQuery
+My main motivation behind this player was to build a lightweight, modern, non-jQuery
 dependent Soundcloud player.  The existing custom players I found were great and
 I've taken quite a bit of inspiration from them, but these days I much prefer
 not relying on jQuery and writing code that can be imported easily as an ES6
 module.  
 
-I also had a specific use case for being able to easily trigger callbacks at
-specific points in a track, so that was another motivation.  
+I also had a couple of other personal motivations:
+- Being able to easily trigger callbacks at specific points in a track
+- Practicing ES6 :)
 
 ## The Stack
 
@@ -73,3 +74,4 @@ $ npm test
 ## Todo
 - More tests :)
 - Separate modules out more
+- API docs
