@@ -1,4 +1,5 @@
 import { toMilliseconds, toTimecode } from './timecode';
+import { Waveform } from './waveform';
 
 export class Player {
     constructor(options) {
@@ -29,6 +30,7 @@ export class Player {
         this.subscriptions = {};
         this.trackOptions = {};
         this.currentTrackIndex = 0;
+        this.useSvg = options.useSvg || false;
 
         // State
         this.busy = false;
@@ -57,23 +59,31 @@ export class Player {
         let frag = document.createDocumentFragment();
 
         let prev = document.createElement('a');
-        prev.textContent = 'Previous';
+        let prevSpan = document.createElement('span');
+        prevSpan.textContent = 'Previous';
         prev.className = 'sc-prev';
+        prev.appendChild(prevSpan);
         frag.appendChild(prev);
 
         let play = document.createElement('a');
-        play.textContent = 'Play';
+        let playSpan = document.createElement('span');
+        playSpan.textContent = 'Play';
         play.className = 'sc-play';
+        play.appendChild(playSpan);
         frag.appendChild(play);
 
         let pause = document.createElement('a');
-        pause.textContent = 'Pause';
+        let pauseSpan = document.createElement('span');
+        pauseSpan.textContent = 'Play';
         pause.className = 'sc-pause';
+        pause.appendChild(pauseSpan);
         frag.appendChild(pause);
 
         let next = document.createElement('a');
-        next.textContent = 'Next';
+        let nextSpan = document.createElement('span');
+        nextSpan.textContent = 'Play';
         next.className = 'sc-next';
+        next.appendChild(nextSpan);
         frag.appendChild(next);
 
         controlsEl.appendChild(frag);
@@ -110,8 +120,8 @@ export class Player {
     /**
      * Removes the active class from all of the track links
      */
-    removeActiveTrackLinks (nodes) {
-        nodes = Array.from(nodes);
+    removeActiveTrackLinks () {
+        let nodes = Array.from(this.tracksEl.children);
 
         nodes.forEach(function(node) {
             node.classList.remove('sc-track--active');
@@ -174,18 +184,18 @@ export class Player {
                 }
 
                 if (target.classList.contains('sc-play')) {
-                    if (controlsEl.classList.contains('sc--paused')) {
+                    if (document.body.classList.contains('sc--paused')) {
                         player.resume();
                     } else {
                         player.play();
                     }
-                    controlsEl.classList.add('sc--playing');
-                    controlsEl.classList.remove('sc--paused');
+                    document.body.classList.add('sc--playing');
+                    document.body.classList.remove('sc--paused');
                 }
 
                 if (target.classList.contains('sc-pause')) {
-                    controlsEl.classList.add('sc--paused');
-                    controlsEl.classList.remove('sc--playing');
+                    document.body.classList.add('sc--paused');
+                    document.body.classList.remove('sc--playing');
                     player.pause();
                 }
             }
@@ -200,9 +210,6 @@ export class Player {
             if (e.target && e.target.nodeName === 'A') {
                 let target = e.target;
                 let index = target.getAttribute('data-track-index');
-
-                player.removeActiveTrackLinks(tracksEl.children);
-                target.classList.add('sc-track--active');
 
                 player.play(index);
             }
@@ -324,9 +331,16 @@ export class Player {
             whileplaying: options.whileplaying || function() {
                 var relative = this.position / this.duration;
                 var timecode = toTimecode(this.position);
+                var duration = toTimecode(this.duration);
 
-                player.timeEl.textContent = timecode;
-                player.played.style.width = (100 * relative) + '%';
+                player.timeEl.textContent = `${timecode} / ${duration}`;
+
+                if (player.useSvg) {
+                    let playedEl = document.querySelectorAll('.rect-played')[0];
+                    playedEl.style.width = (100 * relative) + '%';
+                } else {
+                    player.played.style.width = (100 * relative) + '%';
+                }
             }
         }, trackOptions, options);
 
@@ -335,6 +349,10 @@ export class Player {
             sound.play();
             player.playing = true;
             player.paused = false;
+
+            if (typeof window === 'object') {
+                document.body.classList.add('sc--playing');
+            }
         });
     }
 
@@ -374,22 +392,40 @@ export class Player {
 
         let opts = this.trackOptions[track.id];
 
+        self.removeActiveTrackLinks();
+        self.makeTrackActive(trackNo || 0);
+
         return this.stream(track, opts || {});
+    }
+
+    makeTrackActive (trackIndex) {
+        let tracksEl = this.tracksEl;
+        let track = Array.from(tracksEl.children).filter((el) => {
+            return parseInt(el.getAttribute('data-track-index'), 10) === parseInt(trackIndex, 10);
+        });
+
+        track[0].classList.add('sc-track--active');
+
     }
 
     stop () {
         this.currentSoundObject.stop();
+        document.body.classList.remove('sc--playing');
     }
 
     pause () {
         this.paused = true;
         this.playing = false;
+        document.body.classList.remove('sc--playing');
+        document.body.classList.add('sc--paused');
         this.currentSoundObject.pause();
     }
 
     resume () {
         this.paused = false;
         this.playing = true;
+        document.body.classList.remove('sc--paused');
+        document.body.classList.add('sc--playing');
         this.currentSoundObject.resume();
     }
 
@@ -428,16 +464,38 @@ export class Player {
     prepareScrubber (track) {
         let self = this;
 
-        if (!this.played) {
-            this.played = document.createElement('div');
-            this.played.classList.add('sc-played');
-            this.scrubberEl.appendChild(this.played);
+        if (this.useSvg) {
+            this.scrubberEl.innerHTML = '';
+
+            let waveform = new Waveform({
+                clientId: this.clientId,
+                container: self.scrubberEl,
+                track: track
+            });
+
+            this.scrubberEl.appendChild(waveform.svg);
+
+        } else {
+
+            if (!this.played) {
+                this.played = document.createElement('div');
+                this.played.classList.add('sc-played');
+                this.scrubberEl.appendChild(this.played);
+            }
+
+            let base = document.createElement('div');
+            let img = document.createElement('img');
+            base.classList.add('sc-waveform');
+            img.src = track.waveform_url;
+            base.appendChild(img);
+
+            this.scrubberEl.appendChild(base);
         }
 
-        this.scrubberEl.style.background = `url(${track.waveform_url}) 0 0 / cover no-repeat`;
         this.scrubberEl.addEventListener('click', function(e) {
             self.scrub(e.pageX);
         });
+
     }
 
 }

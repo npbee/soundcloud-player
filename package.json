@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Simple and lightweight custom soundcloud player built with es6",
   "main": "index.js",
-  "directories": {
-  },
+  "directories": {},
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha --compilers js:babel/register",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot"
@@ -26,5 +25,9 @@
     "sinon": "^1.15.4",
     "webpack": "^1.10.1",
     "webpack-dev-server": "^1.10.1"
+  },
+  "dependencies": {
+    "d3": "^3.5.6",
+    "soundcloud-waveform": "^1.0.0"
   }
 }
