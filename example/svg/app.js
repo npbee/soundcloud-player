@@ -1,5 +1,5 @@
-import { Player } from '../../src/index';
-import { Waveform } from '../../src/waveform/svg';
+import Player from '../../';
+import SvgWaveform from '../../src/waveform/svg';
 
 let player = new Player({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
@@ -8,7 +8,7 @@ let player = new Player({
     tracksEl: document.getElementById('tracks'),
     controlsEl: document.getElementById('controls'),
     onWaveformCreate: function(track) {
-        var waveform = new Waveform({
+        var waveform = new SvgWaveform({
             container: document.getElementById('scrubber'),
             clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
             track: track

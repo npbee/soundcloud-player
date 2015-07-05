@@ -1,4 +1,4 @@
-import { Player } from '../../src/index';
+import Player from '../../';
 
 let player = new Player({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',

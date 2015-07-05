@@ -1,6 +1,6 @@
 import getWaveform from 'soundcloud-waveform';
 
-export class Waveform {
+export default class CanvasWaveform {
     constructor (options) {
 
         this.container = options.container;

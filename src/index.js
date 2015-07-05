@@ -1,6 +1,6 @@
 import { toMilliseconds, toTimecode } from './timecode';
 
-export class Player {
+export default class Player {
     constructor(options) {
 
         if (typeof SC !== 'object') {

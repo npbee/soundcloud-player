@@ -1,5 +1,5 @@
-import { Player } from '../../src/index';
-import { Waveform } from '../../src/waveform/canvas';
+import Player from '../../';
+import CanvasWaveform from '../../src/waveform/canvas';
 
 let player = new Player({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
@@ -8,7 +8,7 @@ let player = new Player({
     tracksEl: document.getElementById('tracks'),
     controlsEl: document.getElementById('controls'),
     onWaveformCreate: function(track) {
-        var waveform = new Waveform({
+        var waveform = new CanvasWaveform({
             container: document.getElementById('scrubber'),
             clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
             track: track

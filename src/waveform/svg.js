@@ -25,7 +25,7 @@ const debouncedAnimationFrame = function(fn, wait = 200) {
     };
 };
 
-export class Waveform {
+export default class SvgWaveform {
     constructor (options) {
 
         this.element = document.createElementNS(svgNS, 'svg');
