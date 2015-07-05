@@ -56,6 +56,58 @@ player.addSets('thesetid')
 player.play();
 ```
 
+## Waveforms
+
+Soundcloud will return an image for the waveform of the track that was
+requested.  This is the default waveform used with the player.  The downside is
+that it can be tough to integrate seamlessly into your site because you can't
+change the background of the image, see https://developers.soundcloud.com/blog/waveforms-let-s-talk-about-them.  
+That article mentions use of a service called waveform.js that analyzes that
+waveform image of a track and returns an array of floating point numbers.
+Waveform.js also has a client library that will generate the waveforms via
+canvas automatically.  
+
+In an attempt to decouple the waveform from the player, there is a parameter
+that can be provided called `onWaveformCreate`.  This parameter is expected to
+be a function and will be passed the current track.  Using this parameter, you
+can create a waveform however you'd like, with the condition that your function
+returns an element or a property called `.element`.  The result of this function
+will be appended to your container object.  There are two waveform constructors
+included:  one using SVG and the other using canvas.  
+
+Here's an example:
+
+```javascript
+import { Player } from 'soundcloud-player';
+import { SvgWaveform } from 'soundcloud-player';
+
+let scrubberEl = document.getElementById('scrubber');
+let clientId = '12345';
+
+let player = new Player({
+    clientId: clientId,
+    scrubberEl: scrubberEl,
+    onWaveformCreate: function(track) {
+        let waveform = new SvgWaveform({
+            container: scrubberEl,
+            clientId: clientId,
+            track: track
+        });
+
+        return waveform;
+    }
+});
+```
+
+The waveform returned from the `onWaveformCreate` will be appended to the
+scrubber element provided.  Also, if your waveform instance contains methods for
+`whileplaying` and `onload`, those methods will be called with the sound object.
+You can use this to adjust the "played" elements.  
+
+This is possibly more complicated than it's worth, but it allows you to build a
+bundle that does not include all of the SVG or canvas code if you don't want it.  
+
+
 ## Developing
 
 I have an `example.js` file setup with the webpack-dev-server for easy testing.
@@ -72,6 +124,5 @@ $ npm test
 ```
 
 ## Todo
-- More tests :)
-- Separate modules out more
+- More tests
 - API docs
