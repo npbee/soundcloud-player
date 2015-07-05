@@ -41,7 +41,7 @@ The Soundcloud SDK is not
 built as a module currently, so it cannot be imported.
 
 ```bash
-import { Player } from 'soundcloud-player';
+import Player from 'soundcloud-player';
 
 let player = new Player({
     clientId: '12345',
@@ -78,8 +78,8 @@ included:  one using SVG and the other using canvas.
 Here's an example:
 
 ```javascript
-import { Player } from 'soundcloud-player';
-import { SvgWaveform } from 'soundcloud-player';
+import Player from 'soundcloud-player';
+import SvgWaveform from 'soundcloud-player/waveform/svg';
 
 let scrubberEl = document.getElementById('scrubber');
 let clientId = '12345';
