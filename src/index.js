@@ -1,5 +1,4 @@
 import { toMilliseconds, toTimecode } from './timecode';
-import { Waveform } from './waveform';
 
 export class Player {
     constructor(options) {
@@ -20,9 +19,9 @@ export class Player {
         this.clientId = options.clientId;
 
         // Provided DOM elements
-        this.scrubberEl = options.scrubberEl || undefined;;
-        this.timeEl = options.timeEl || undefined;;
-        this.tracksEl = options.tracksEl || undefined;;
+        this.scrubberEl = options.scrubberEl || undefined;
+        this.timeEl = options.timeEl || undefined;
+        this.tracksEl = options.tracksEl || undefined;
         this.controlsEl = options.controlsEl || undefined;
 
         // Props
@@ -30,7 +29,8 @@ export class Player {
         this.subscriptions = {};
         this.trackOptions = {};
         this.currentTrackIndex = 0;
-        this.useSvg = options.useSvg || false;
+        this.onWaveformCreate = options.onWaveformCreate || undefined;
+        this.showWaveform = options.showWaveform !== undefined ? options.showWaveform : true;
 
         // State
         this.busy = false;
@@ -327,6 +327,10 @@ export class Player {
                         sound.onPosition(sub.time, sub.fn);
                     });
                 }
+
+                if (player.waveform && player.waveform.onload) {
+                    player.waveform.onload(this);
+                }
             },
             whileplaying: options.whileplaying || function() {
                 var relative = this.position / this.duration;
@@ -335,9 +339,8 @@ export class Player {
 
                 player.timeEl.textContent = `${timecode} / ${duration}`;
 
-                if (player.useSvg) {
-                    let playedEl = document.querySelectorAll('.rect-played')[0];
-                    playedEl.style.width = (100 * relative) + '%';
+                if (player.waveform && player.waveform.whileplaying) {
+                    player.waveform.whileplaying(this);
                 } else {
                     player.played.style.width = (100 * relative) + '%';
                 }
@@ -464,18 +467,20 @@ export class Player {
     prepareScrubber (track) {
         let self = this;
 
-        if (this.useSvg) {
+        console.log(self);
+
+        if (this.onWaveformCreate) {
             this.scrubberEl.innerHTML = '';
 
-            let waveform = new Waveform({
-                clientId: this.clientId,
-                container: self.scrubberEl,
-                track: track
-            });
+            let waveform = this.waveform = this.onWaveformCreate(track);
 
-            this.scrubberEl.appendChild(waveform.svg);
+            if (waveform.element) {
+                this.scrubberEl.appendChild(waveform.element);
+            } else {
+                this.scrubberEl.appendChild(waveform);
+            }
 
-        } else {
+        } else if (this.showWaveform) {
 
             if (!this.played) {
                 this.played = document.createElement('div');

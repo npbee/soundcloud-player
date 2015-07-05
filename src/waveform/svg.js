@@ -55,9 +55,9 @@ var optimizedResize = (function() {
 export class Waveform {
     constructor (options) {
 
-        this.svg = document.createElementNS(svgNS, 'svg');
-        this.svg.setAttribute('width', '100%');
-        this.svg.setAttribute('height', '100%');
+        this.element = document.createElementNS(svgNS, 'svg');
+        this.element.setAttribute('width', '100%');
+        this.element.setAttribute('height', '100%');
 
         this.container = options.container;
 
@@ -98,11 +98,16 @@ export class Waveform {
         let backgroundRect = this.createRect('background');
         rectsContainer.appendChild(backgroundRect);
 
-        let playedRect = this.createRect('played');
+        let playedRect = this.playedRect = this.createRect('played');
         rectsContainer.appendChild(playedRect);
 
-        this.svg.appendChild(clipPath);
-        this.svg.appendChild(rectsContainer);
+        this.element.appendChild(clipPath);
+        this.element.appendChild(rectsContainer);
+    }
+
+    whileplaying (soundObj) {
+        var relative = soundObj.position / soundObj.duration;
+        this.playedRect.style.width = (100 * relative) + '%';
     }
 
     redraw() {
@@ -170,7 +175,7 @@ export class Waveform {
             let start = `M0,${data[0] * _height}`;
             let zeroPnt = data[0] * _height;
             let last = `L0,${data[data.length - 1] * _height}`;
-
+            let magnifier = .2;
 
             let firstHalf = pointData.map(function(datum, index, arr) {
                 let interval = width / arr.length;

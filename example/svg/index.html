@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link href='http://fonts.googleapis.com/css?family=Roboto:100' rel='stylesheet' type='text/css'>
+        <title></title>
+        <style>
+            body {
+                background: #EFEFEF;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+            }
+
+            /* Time */
+            .time {
+                min-height: 20px;
+                padding: 10px 20px;
+                text-align: right;
+            }
+
+            /* Tracks */
+            .tracks {
+                text-align: center;
+            }
+
+            .tracks a {
+                border-bottom: 1px solid #C7C5C5;
+                display: block;
+                background: #d9d9d9;
+                padding: 30px;
+                font-size: 2em;
+                -webkit-transition: background 200ms;
+            }
+
+            .tracks a:first-child {
+                border-top: 1px solid #C7C5C5;
+            }
+
+            .tracks a:hover {
+                cursor: pointer;
+                background: darkseagreen;
+            }
+
+            .tracks .sc-track--active {
+                background: seagreen;
+            }
+
+            /* Scrubber */
+            /* SVG */
+            .rect-background {
+                fill: #d9d9d9;
+            }
+
+            .rect-played {
+                fill: seagreen;
+                width: 0%;
+            }
+
+            .sc--playing .scrubber {
+                opacity: 1;
+            }
+
+            .scrubber {
+                height: 200px;
+                width: 100%;
+                position: relative;
+                opacity: 0;
+                -webkit-transition: opacity 300ms;
+            }
+
+            .sc--paused .scrubber {
+                opacity: 1;
+            }
+
+            .sc-played {
+                background: seagreen;
+                height: 100%;
+                width: 0%;
+            }
+
+            .sc-waveform {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .sc-waveform img {
+                height: 100%;
+                width: 100%;
+            }
+
+            /* Controls */
+            .controls {
+                padding: 30px;
+                text-align: center;
+            }
+
+            .sc-prev span, 
+            .sc-next span,
+            .sc-play span, 
+            .sc-pause span {
+                display: none;
+            }
+
+            .sc-prev,
+            .sc-next,
+            .sc-play,
+            .sc-pause {
+                cursor: pointer;
+                display: inline-block;
+                vertical-align: middle;
+                width: 100px;
+                height: 100px;
+            }
+
+            .sc-prev:hover,
+            .sc-next:hover,
+            .sc-play:hover,
+            .sc-pause:hover {
+                color: seagreen;
+            }
+
+            .sc-prev {
+                background: url('/example/assets/Entypo+/controller-jump-to-start.svg') no-repeat;
+            }
+
+            .sc-next {
+                background: url('/example/assets/Entypo+/controller-next.svg') no-repeat;
+            }
+
+            .sc-play {
+                background: url('/example/assets/Entypo+/controller-play.svg') no-repeat;
+            }
+
+            .sc-pause {
+                background: url('/example/assets/Entypo+/controller-paus.svg') no-repeat;
+                display: none;
+            }
+            
+            .sc--playing .sc-play {
+                display: none;
+            }
+
+            .sc--playing .sc-pause {
+                display: inline-block;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="scrubber" class="scrubber"></div>
+        <div id="time" class="time"></div>
+
+        <div id="controls" class="controls"></div>
+        <div class="tracks" id="tracks"></div>
+
+        <script src="http://localhost:8080/webpack-dev-server.js"></script>
+        <script src="http://connect.soundcloud.com/sdk.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/dist/exampleSvg.bundle.js" type="text/javascript" charset="utf-8"></script>
+    </body>
+</html>

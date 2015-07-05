@@ -62,10 +62,15 @@
             }
 
             .scrubber {
-                height: 100px;
+                height: 200px;
                 width: 100%;
                 position: relative;
-                -webkit-transition: opacity 200ms;
+                opacity: 0;
+                -webkit-transition: opacity 300ms;
+            }
+
+            .sc--paused .scrubber {
+                opacity: 1;
             }
 
             .sc-played {
@@ -119,19 +124,19 @@
             }
 
             .sc-prev {
-                background: url('assets/Entypo+/controller-jump-to-start.svg') no-repeat;
+                background: url('/example/assets/Entypo+/controller-jump-to-start.svg') no-repeat;
             }
 
             .sc-next {
-                background: url('assets/Entypo+/controller-next.svg') no-repeat;
+                background: url('/example/assets/Entypo+/controller-next.svg') no-repeat;
             }
 
             .sc-play {
-                background: url('assets/Entypo+/controller-play.svg') no-repeat;
+                background: url('/example/assets/Entypo+/controller-play.svg') no-repeat;
             }
 
             .sc-pause {
-                background: url('assets/Entypo+/controller-paus.svg') no-repeat;
+                background: url('/example/assets/Entypo+/controller-paus.svg') no-repeat;
                 display: none;
             }
             
@@ -154,6 +159,6 @@
 
         <script src="http://localhost:8080/webpack-dev-server.js"></script>
         <script src="http://connect.soundcloud.com/sdk.js" type="text/javascript" charset="utf-8"></script>
-        <script src="dist/example.bundle.js" type="text/javascript" charset="utf-8"></script>
+        <script src="/dist/exampleSvg.bundle.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>

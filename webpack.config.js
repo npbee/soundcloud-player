@@ -3,7 +3,7 @@ var path = require('path');
 module.exports = {
     entry: {
         app: ['webpack/hot/dev-server', './src/index.js'],
-        example: ['webpack/hot/dev-server', './example.js'],
+        exampleSvg: ['webpack/hot/dev-server', './example/svg/app.js'],
     },
     output: {
         path: './dist',

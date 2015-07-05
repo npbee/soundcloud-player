@@ -1,4 +1,5 @@
-import { Player } from './src/index';
+import { Player } from '../../src/index';
+import { svgWaveform } from '../../src/waveform/svg';
 
 let player = new Player({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
@@ -6,9 +7,11 @@ let player = new Player({
     timeEl: document.getElementById('time'),
     tracksEl: document.getElementById('tracks'),
     controlsEl: document.getElementById('controls'),
-    useSvg: true
+    waveform: svgWaveform,
+    waveformOpts: {}
 });
 
+console.log('hi');
 player.at('6743445','01:00', function() {
     console.log('hello');
 });
