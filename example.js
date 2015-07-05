@@ -1,7 +1,7 @@
 import { Player } from './src/index';
 
 let player = new Player({
-    clientId: '287e0a470aceec7d505ab41e1892fddc',
+    clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
     scrubberEl: document.getElementById('scrubber'),
     timeEl: document.getElementById('time'),
     tracksEl: document.getElementById('tracks'),
