@@ -2,55 +2,28 @@ import getWaveform from 'soundcloud-waveform';
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
-var optimizedResize = (function() {
+const debouncedAnimationFrame = function(fn, wait = 200) {
+    var req;
+    var timeout;
 
-    var callbacks = [],
-        running = false;
+    return function debounced() {
+        let obj = this;
+        let args = arguments;
 
-    // fired on resize event
-    function resize() {
-
-        if (!running) {
-            running = true;
-
-            if (window.requestAnimationFrame) {
-                window.requestAnimationFrame(runCallbacks);
-            } else {
-                setTimeout(runCallbacks, 66);
-            }
+        function delayed() {
+            fn.apply(obj, args);
+            timeout = null;
         }
 
-    }
+        clearTimeout(timeout);
+        cancelAnimationFrame(delayed);
 
-    // run the actual callbacks
-    function runCallbacks() {
+        timeout = setTimeout(function() {
+            requestAnimationFrame(delayed);
+        }, wait);
 
-        callbacks.forEach(function(callback) {
-            callback();
-        });
-
-        running = false;
-    }
-
-    // adds callback to loop
-    function addCallback(callback) {
-
-        if (callback) {
-            callbacks.push(callback);
-        }
-
-    }
-
-    return {
-        // public method to add additional callback
-        add: function(callback) {
-            if (!callbacks.length) {
-                window.addEventListener('resize', resize);
-            }
-            addCallback(callback);
-        }
-    }
-}());
+    };
+};
 
 export class Waveform {
     constructor (options) {
@@ -63,15 +36,15 @@ export class Waveform {
 
         this.track = options.track;
         this.clientId = options.clientId;
-        this.draw();
 
         this.setupElements();
         this.bindEvents();
+        this.getWaveform();
     }
 
     bindEvents() {
-        optimizedResize.add(this.redraw.bind(this));
-
+        var redraw = debouncedAnimationFrame(this.draw.bind(this));
+        window.addEventListener('resize', redraw);
     }
 
     createRect (type) {
@@ -85,6 +58,15 @@ export class Waveform {
         rect.classList.add(`rect-${type}`);
 
         return rect;
+    }
+
+    getWaveform () {
+        let waveform = this;
+
+        return getWaveform(this.clientId, this.track.uri, function(err, data) {
+            waveform.data = data;
+            waveform.draw();
+        });
     }
 
     setupElements () {
@@ -110,23 +92,26 @@ export class Waveform {
         this.playedRect.style.width = (100 * relative) + '%';
     }
 
-    redraw() {
+    draw () {
         let data = this.data;
-        let self = this;
+        let track = this.track;
+        var path;
 
-        if (!data) { return; }
+        if (this.clipPath.children.length) {
+            path = this.clipPath.children[0];
+            path.setAttribute('d', '');
+        } else {
+            path = document.createElementNS(svgNS, 'path');
+        }
 
         let width = this.container.getBoundingClientRect().width;
         let height = this.container.getBoundingClientRect().height;
-        let path = this.clipPath.children[0];
-
-        path.setAttribute('d', '');
 
         let pointData = data.slice(1);
         let start = `M0,${data[0] * height}`;
         let zeroPnt = data[0] * height;
         let last = `L0,${data[data.length - 1] * height}`;
-
+        let magnifier = .2;
 
         let firstHalf = pointData.map(function(datum, index, arr) {
             let interval = width / arr.length;
@@ -154,57 +139,7 @@ export class Waveform {
         secondHalf = secondHalf.replace(/,$/, '');
 
         path.setAttribute('d', `${start} ${firstHalf} ${secondHalf} `);
-    }
 
-    draw () {
-        let self = this;
-        let track = this.track;
-        let path = document.createElementNS(svgNS, 'path');
-        let width = this.container.getBoundingClientRect().width;
-        let height = this.container.getBoundingClientRect().height;
-        let _height = height;
-
-        //self.svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        //self.svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-
-        getWaveform(this.clientId, track.uri, function(err, data) {
-
-            self.data = data;
-
-            let pointData = data.slice(1);
-            let start = `M0,${data[0] * _height}`;
-            let zeroPnt = data[0] * _height;
-            let last = `L0,${data[data.length - 1] * _height}`;
-            let magnifier = .2;
-
-            let firstHalf = pointData.map(function(datum, index, arr) {
-                let interval = width / arr.length;
-                let y = `${zeroPnt - (datum * zeroPnt)}`;
-
-                if (index === 0) {
-                    return `L${interval},${y} `;
-                } else {
-                    return `L${(index + 1) * interval},${y} `;
-                }
-            }).join('');
-
-            let secondHalf = pointData.slice().reverse().map(function(datum, index, arr) {
-                let interval = width / arr.length;
-                let y = `${_height - (zeroPnt - (datum * zeroPnt))}`;
-
-                if (index === 0) {
-                    return `L${width},${y} `;
-                } else {
-                    return `L${width - ((index + 1) * interval)},${y} `;
-                }
-            }).join('');
-
-            firstHalf = firstHalf.replace(/,$/, '');
-            secondHalf = secondHalf.replace(/,$/, '');
-
-            path.setAttribute('d', `${start} ${firstHalf} ${secondHalf} `);
-
-            self.clipPath.appendChild(path);
-        });
+        this.clipPath.appendChild(path);
     }
 }
