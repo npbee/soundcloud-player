@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title></title>
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            #scrubber {
+                height: 280px;
+                width: 100%;
+            }
+
+            .sc-played {
+                background: lightseagreen;
+                height: 100%;
+                width: 0%;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="scrubber"></div>
+        <div id="time"></div>
+
+        <div class="tracks">
+            <h2>Tracks</h2>
+            <div id="tracks"></div>
+        </div>
+
+        <div id="controls"></div>
+
+        <script src="http://localhost:8080/webpack-dev-server.js"></script>
+        <script src="http://connect.soundcloud.com/sdk.js" type="text/javascript" charset="utf-8"></script>
+        <script src="dist/example.bundle.js" type="text/javascript" charset="utf-8"></script>
+    </body>
+</html>
