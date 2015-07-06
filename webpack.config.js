@@ -3,11 +3,9 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        app: ['webpack/hot/dev-server', './src/index.js'],
         exampleSvg: ['webpack/hot/dev-server', './example/svg/app.js'],
         exampleCanvas: ['webpack/hot/dev-server', './example/canvas/app.js'],
-        exampleImg: ['webpack/hot/dev-server', './example/img/app.js'],
-        build
+        exampleImg: ['webpack/hot/dev-server', './example/img/app.js']
     },
     output: {
         path: './dist',
@@ -15,7 +13,7 @@ module.exports = {
         filename: '[name].bundle.js'
     },
     plugins: [
-        new webpack.optimize.UglifyJsPlugin()
+        //new webpack.optimize.UglifyJsPlugin()
     ],
     module: {
         loaders: [
