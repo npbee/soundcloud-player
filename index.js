@@ -1,3 +1,3 @@
-var Player = require('./src');
+import Player from './src/index';
 
-module.exports = Player;
+export default Player;
