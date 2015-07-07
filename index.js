@@ -1,3 +1,2 @@
-import Player from './src/index';
+module.exports = require('./lib');
 
-export default Player;
