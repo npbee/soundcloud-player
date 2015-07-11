@@ -1,6 +1,7 @@
 import objectAssign from 'object-assign';
 import { toMilliseconds, toTimecode } from '../utils/timecode';
 import { stream as scStream } from '../sc';
+import { removeActiveTrackLinks, makeTrackActive, bindScrubberEvents } from '../dom';
 
 function stream(player, track, options = {}) {
 
@@ -76,9 +77,7 @@ function prepareScrubber(player, track) {
         player.scrubberEl.appendChild(base);
     }
 
-    player.scrubberEl.addEventListener('click', function(e) {
-        player.scrub(e.pageX);
-    });
+    bindScrubberEvents(player);
 }
 
 export function play(player, trackIndex = 0) {
@@ -106,11 +105,23 @@ export function play(player, trackIndex = 0) {
     let opts = player.trackOptions[track.id];
 
     prepareScrubber(player, track);
-    //self.removeActiveTrackLinks();
-    //self.makeTrackActive(trackNo || 0);
+    removeActiveTrackLinks(player);
+    makeTrackActive(player, trackIndex);
 
     return stream(player, track, opts);
 }
+
+export function seek(player, xPos) {
+    let rect = player.scrubberEl.getBoundingClientRect();
+    let left = rect.left;
+    let width = player.scrubberEl.offsetWidth;
+    let relative = (xPos - left) / width;
+    let track = player.currentSoundObject;
+    let duration = track.duration;
+    let newTime = duration * relative;
+
+    track.setPosition(newTime);
+};
 
 export function stop(player) {
     return player.currentSoundObject.stop();

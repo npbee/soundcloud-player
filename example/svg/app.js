@@ -2,7 +2,7 @@ import Player from '../../src/index';
 import SvgWaveform from '../../src/waveform/svg';
 
 let player = Object.create(Player);
-console.log(player);
+
 player.init({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
     scrubberEl: document.getElementById('scrubber'),

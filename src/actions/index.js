@@ -1,4 +1,5 @@
 import { get as scGet } from '../sc';
+import { appendTrackLinks, appendControls } from '../dom';
 
 export function addSets(player, setIds, options = {}) {
 
@@ -32,8 +33,8 @@ export function addSets(player, setIds, options = {}) {
 
             });
 
-            player.appendTrackLinks();
-            player.appendControls();
+            appendTrackLinks(player);
+            appendControls(player);
             player.busy = false;
             return sets;
         });

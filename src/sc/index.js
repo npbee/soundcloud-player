@@ -11,3 +11,9 @@ export function get(uri, opts = {}) {
         });
     });
 }
+
+export function init(clientId) {
+    return SC.initialize({
+        client_id: clientId
+    });
+};
