@@ -1,4 +1,6 @@
-# Soundcloud Player
+# Soundcloud Player ![travisci](https://api.travis-ci.org/npbee/soundcloud-player.svg?branch=master)
+
+![sc_gradient_240x120](https://cloud.githubusercontent.com/assets/3129236/8635693/770aa6f6-27e6-11e5-9170-47ecdd1a6fb6.png)
 
 My main motivation behind this player was to build a lightweight, modern, non-jQuery
 dependent Soundcloud player.  The existing custom players I found were great and
