@@ -1,4 +1,4 @@
-import Player from '../../src/index';
+import Player from '../../';
 import SvgWaveform from '../../src/waveform/svg';
 
 let player = Object.create(Player);

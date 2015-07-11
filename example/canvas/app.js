@@ -1,7 +1,9 @@
 import Player from '../../';
 import CanvasWaveform from '../../src/waveform/canvas';
 
-let player = new Player({
+let player = Object.create(Player);
+
+player.init({
     clientId: 'aa97dc0ebed982bfcd02ef939f2149cc',
     scrubberEl: document.getElementById('scrubber'),
     timeEl: document.getElementById('time'),

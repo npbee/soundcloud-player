@@ -9,6 +9,11 @@ import { init as scInit } from './sc';
 let Player = {
 
     init(options) {
+
+        let defaults = {
+            showWaveform: true
+        };
+
         if (typeof SC !== 'object') {
             throw new Error('No "SC" Soundcloud object found.  You need to first load the ' +
                 'Soundcloud SDK before loading the player.');
@@ -22,7 +27,7 @@ let Player = {
             throw new Error('Please provide a "clientId" parameter to the constructor');
         }
 
-        objectAssign(this, options);
+        objectAssign(this, defaults, options);
 
         // Props
         this.tracks = [];

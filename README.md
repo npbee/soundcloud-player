@@ -84,7 +84,9 @@ import SvgWaveform from 'soundcloud-player/waveform/svg';
 let scrubberEl = document.getElementById('scrubber');
 let clientId = '12345';
 
-let player = new Player({
+let player = Object.create(Player);
+
+player.init({
     clientId: clientId,
     scrubberEl: scrubberEl,
     onWaveformCreate: function(track) {
@@ -121,6 +123,12 @@ To run the tests, run:
 
 ```bash
 $ npm test
+```
+
+Compiling to ES5:
+
+```bash
+$ npm run compile
 ```
 
 ## Todo
