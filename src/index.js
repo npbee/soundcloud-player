@@ -1,4 +1,4 @@
-import { toMilliseconds, toTimecode } from './timecode';
+import { toMilliseconds, toTimecode } from './utils/timecode';
 
 export default class Player {
     constructor(options) {

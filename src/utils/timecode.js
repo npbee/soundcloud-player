@@ -1,3 +1,14 @@
+/**
+ * Converts a timecode string to milliseconds.
+ *
+ * @param {string} str The timecode string
+ * @return {number} The number in milliseconds
+ *
+ * @example
+ * let milliseconds = toMilliseconds('01:20:30');
+ * //=> 4830000
+ *
+ */
 export function toMilliseconds (str) {
     let regex = /^(?:(?:([01]?\d|2[0-3]):)?([0-5]?\d):)?([0-5]?\d)$/;
 
@@ -18,9 +29,23 @@ export function toMilliseconds (str) {
 
 }
 
+/**
+ * Pads a number with a zero if the number is greater than 10
+ */
 function padWithZero(num) {
     return num < 10 ? `0${num}` : `${num}`;
 }
+
+/**
+ * Converts a number in millisecons to a timecode string.
+ *
+ * @param {number} ms The number to convert in milliseconds.
+ * @return {string} The timecode string
+ *
+ * @example
+ * let timecode = toTimecode(4830000);
+ * //=> '01:20:30'
+ */
 export function toTimecode (ms) {
     let hours = Math.floor(ms / (60 * 60 * 1000));
     let minutes = Math.floor((ms / 60000) % 60);

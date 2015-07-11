@@ -1,4 +1,4 @@
-import { toMilliseconds, toTimecode} from '../src/timecode';
+import { toMilliseconds, toTimecode} from '../src/utils/timecode';
 import { expect } from 'chai';
 
 describe('Timecode', function() {
