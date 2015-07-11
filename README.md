@@ -43,7 +43,9 @@ built as a module currently, so it cannot be imported.
 ```bash
 import Player from 'soundcloud-player';
 
-let player = new Player({
+let player = Object.create(Player);
+
+player.init({
     clientId: '12345',
     ...
 });
@@ -109,6 +111,135 @@ You can use this to adjust the "played" elements.
 This is possibly more complicated than it's worth, but it allows you to build a
 bundle that does not include all of the SVG or canvas code if you don't want it.  
 
+## API
+
+### Player Controls
+
+#### play(trackIndex)
+
+* `trackIndex` {Number} An optional, _zero_-based number to pass representing the
+  track number in the player that you want to play.  If not provided, the player
+will play the first track
+
+#### pause()
+#### next()
+#### prev()
+#### stop()
+#### resume()
+
+Example:
+
+```javascript
+import Player from 'soundcloud-player';
+
+let player = Object.create(Player);
+
+player.init({ clientId: '12345' });
+
+// Play a track in the player.  You can optionally pass a number representing
+// the track to play.  This number is zero-based.
+player.play(1); // Plays the second track in the player
+
+// Pause the player
+player.pause();
+
+// Next track
+player.next();
+
+// Previous track
+player.prev();
+
+// Stop the player
+player.stop();
+
+// Resume the player
+player.resume();
+
+```
+
+### Adding Items to the Player
+
+#### addSets([setIds], [trackOptions])
+
+* `setIds` {String|Array} The set id or an array of set ids to be added to the
+  player.
+* `trackOptions` {Object|Array} An object or array of objects representing the
+  options for the SoundManager2 object that Soundcloud creates for a track.  If
+a single object is provided it will be used for _all_ tracks that are returned.
+* `return` {Promise} 
+
+Example:
+
+```javascript
+import Player from 'soundcloud-player';
+
+let player = Object.create(Player);
+
+player.init({ clientId: '12345' });
+
+// Retrieves the playlist with the ID of '12345' from Soundcloud and resolves
+// with the array of sets.
+player.addSets('12345')
+    .then(function(sets) {
+        // The sets
+    });
+
+// Retrieves the playlist with an ID of '12345' from Soundcloud and uses the
+// provided options object for ALL tracks
+function onTimedComments(comments) {
+    // Do something with the comments
+}
+
+player.addSets('12345', { ontimedcomments: onTimedComments })
+    .then(function(sets) {
+        // The sets
+        // All of the tracks will use the passed options object
+    });
+
+// Retrieves the playlist with an ID of '12345' from Soundcloud and uses the
+// provided options array for each individual track
+
+function onTrackOneFinish() {
+    // Track 1 finished
+}
+
+function onTrackTwoFinish() {
+    // Track 2 finished
+}
+
+player.addSets('12345', [{ onfinish: onTrackOneFinish }, { onfinish: onTrackTwoFinish }])
+    .then(function(sets) {
+        // The sets
+        // Track 1 will use the first options object.  
+        // Track 2 will use the second options object
+    });
+
+```
+
+### Subscribing to Specific Times in a Track
+
+#### at(trackId, timecode, callback)
+
+* `trackId` {Number} The track id to operate on.
+* `timecode` {String|Number} The timecode or number in milliseconds of the
+  point in time of the track you want to subscribe to.
+* `callback` {Function} The callback called when the track hits the specified
+  points.
+
+Example:
+
+```javascript
+import Player from 'soundcloud-player';
+
+let player = Object.create(Player);
+
+player.init({ clientId: '12345' });
+
+// At the 1-minute mark of track '6789', the callback will be called
+player.at('6789', '01:00', function() {
+    // Do something at this point
+});
+```
 
 ## Developing
 
@@ -131,6 +262,7 @@ Compiling to ES5:
 $ npm run compile
 ```
 
+
 ## Todo
 - More tests
-- API docs
+- Some kind of mapping for track options and subscriptions
