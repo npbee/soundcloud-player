@@ -1,6 +1,7 @@
 import { toMilliseconds, toTimecode } from './utils/timecode';
-import { play, stop } from './controls';
+import { play, stop, next, prev, pause, resume } from './controls';
 import { at } from './subscriptions';
+import { addSets } from './actions';
 import objectAssign from 'object-assign';
 
 let Player = {
@@ -56,10 +57,24 @@ let Player = {
         return play(this, --this.currentTrackIndex);
     },
 
+    pause() {
+        return pause(this);
+    },
+
+    resume() {
+        return resume(this);
+    },
+
     // Subscriptions
     at(trackId, time, fn) {
         return at.apply(null, [this, ...arguments]);
+    },
+
+    // Set/track addition
+    addSets(setIds, options) {
+        return addSets.apply(null, [this, ...arguments]);
     }
+
 
 }
 
@@ -69,117 +84,6 @@ Player.initializeSoundcloud = function(clientId) {
     });
 }
 
-//Player.at = function(trackId, time, fn) {
-    //if (!this.subscriptions[trackId]) {
-        //this.subscriptions[trackId] = [];
-    //}
-
-    //if (typeof time === 'string') {
-        //time = toMilliseconds(time);
-    //}
-
-    //this.subscriptions[trackId].push({
-        //time: time,
-        //fn: fn
-    //});
-//}
-
-Player.addSets = function(setIds, options) {
-    let self = this;
-
-    self.busy = true;
-
-    if (typeof setIds === 'string') {
-        setIds = [setIds];
-    }
-
-    if (!Array.isArray(options)) {
-        options = [options];
-    }
-
-    let promises = setIds.map((setId, index) => {
-        return this.get(`/playlists/${setId}`);
-    });
-
-    return Promise.all(promises)
-        .then(function(sets) {
-
-            sets.forEach(function(set) {
-                set.tracks.forEach(function(track, index) {
-                    let opts = options.length > 1 ? options[index] : options[0];
-
-                    if (!self.trackOptions[track.id]) {
-                        self.trackOptions[track.id] = opts;
-                    }
-
-                    self.tracks.push(track);
-                });
-
-            });
-
-            self.appendTrackLinks();
-            self.appendControls();
-            self.busy = false;
-            return sets;
-        });
-}
-
-Player.get = function(uri, options) {
-    return new Promise(function(resolve, reject) {
-        SC.get(uri, options, function(thing, err) {
-            if (err) { return reject(err); }
-
-            resolve(thing);
-        });
-    });
-}
-
-//Player.stream = function(track, options = {}) {
-    //let player = this;
-    //let trackOptions = player.trackOptions[track.id] || {};
-    //let opts = Object.assign({
-        //onload: function() {
-            //var subs = player.subscriptions[track.id];
-            //let sound = this;
-
-            //if (subs.length) {
-                //subs.forEach(function(sub) {
-                    //sound.onPosition(sub.time, sub.fn);
-                //});
-            //}
-
-            //if (player.waveform && player.waveform.onload) {
-                //player.waveform.onload(this);
-            //}
-        //},
-        //whileplaying: options.whileplaying || function() {
-            //var relative = this.position / this.duration;
-            //var timecode = toTimecode(this.position);
-            //var duration = toTimecode(this.duration);
-
-            //console.log("value");
-
-            //player.timeEl.textContent = `${timecode} / ${duration}`;
-
-            //if (player.waveform && player.waveform.whileplaying) {
-                //player.waveform.whileplaying(this);
-            //} else {
-                //player.played.style.width = (100 * relative) + '%';
-            //}
-        //}
-    //}, trackOptions, options);
-
-    //SC.stream(track.uri, opts, function(sound) {
-        //player.currentSoundObject = sound;
-        //sound.play();
-        //player.playing = true;
-        //player.paused = false;
-
-        //if (typeof window === 'object') {
-            //document.body.classList.add('sc--playing');
-        //}
-    //});
-//}
 
 Player.appendTrackLinks = function() {
     let tracks = this.tracks;
@@ -288,48 +192,6 @@ Player.bindControlEvents = function() {
     });
 }
 
-//Player.next = function() {
-    //this.play(++this.currentTrackIndex);
-//}
-
-//Player.prev = function() {
-    //this.play(--this.currentTrackIndex);
-//}
-
-//Player.play = function(trackNo) {
-    //var self = this;
-
-    //if (self.playing) {
-        //self.stop();
-    //}
-
-    //if (this.busy) {
-        //setTimeout(function() {
-            //self.play(trackNo);
-        //}, 0);
-        //return;
-    //}
-
-    //if (!this.tracks.length) {
-        //throw new Error("There are no tracks in the player!");
-    //}
-
-    //let track = this.tracks[trackNo || 0];
-
-    //if (!track) {
-        //return;
-    //}
-
-    //this.prepareScrubber(track);
-
-    //let opts = this.trackOptions[track.id];
-
-    //self.removeActiveTrackLinks();
-    //self.makeTrackActive(trackNo || 0);
-
-    //return this.stream(track, opts || {});
-//}
-
 Player.makeTrackActive = function(trackIndex) {
     let tracksEl = this.tracksEl;
     let track = Array.from(tracksEl.children).filter((el) => {
@@ -338,27 +200,6 @@ Player.makeTrackActive = function(trackIndex) {
 
     track[0].classList.add('sc-track--active');
 
-}
-
-//Player.stop = function() {
-    //this.currentSoundObject.stop();
-    //document.body.classList.remove('sc--playing');
-//}
-
-Player.pause = function() {
-    this.paused = true;
-    this.playing = false;
-    document.body.classList.remove('sc--playing');
-    document.body.classList.add('sc--paused');
-    this.currentSoundObject.pause();
-}
-
-Player.resume = function() {
-    this.paused = false;
-    this.playing = true;
-    document.body.classList.remove('sc--paused');
-    document.body.classList.add('sc--playing');
-    this.currentSoundObject.resume();
 }
 
 Player.push = function(track, options) {
@@ -391,43 +232,6 @@ Player.seek = function(relative) {
     var newTime = duration * relative;
 
     track.setPosition(newTime);
-}
-
-Player.prepareScrubber = function(track) {
-    let self = this;
-
-    if (this.onWaveformCreate) {
-        this.scrubberEl.innerHTML = '';
-
-        let waveform = this.waveform = this.onWaveformCreate(track);
-
-        if (waveform.element) {
-            this.scrubberEl.appendChild(waveform.element);
-        } else {
-            this.scrubberEl.appendChild(waveform);
-        }
-
-    } else if (this.showWaveform) {
-
-        if (!this.played) {
-            this.played = document.createElement('div');
-            this.played.classList.add('sc-played');
-            this.scrubberEl.appendChild(this.played);
-        }
-
-        let base = document.createElement('div');
-        let img = document.createElement('img');
-        base.classList.add('sc-waveform');
-        img.src = track.waveform_url;
-        base.appendChild(img);
-
-        this.scrubberEl.appendChild(base);
-    }
-
-    this.scrubberEl.addEventListener('click', function(e) {
-        self.scrub(e.pageX);
-    });
-
 }
 
 Player.removeActiveTrackLinks = function() {

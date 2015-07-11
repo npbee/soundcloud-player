@@ -1,5 +1,6 @@
 import objectAssign from 'object-assign';
 import { toMilliseconds, toTimecode } from '../utils/timecode';
+import { stream as scStream } from '../sc';
 
 function stream(player, track, options = {}) {
 
@@ -33,7 +34,7 @@ function stream(player, track, options = {}) {
         }
     }, options);
 
-    SC.stream(track.uri, opts, function(sound) {
+    scStream(track.uri, opts, function(sound) {
         player.currentSoundObject = sound;
         sound.play();
         player.playing = true;
@@ -113,5 +114,21 @@ export function play(player, trackIndex = 0) {
 
 export function stop(player) {
     return player.currentSoundObject.stop();
+}
+
+export function pause(player) {
+    player.paused = true;
+    player.playing = false;
+    document.body.classList.remove('sc--playing');
+    document.body.classList.add('sc--paused');
+    player.currentSoundObject.pause();
+}
+
+export function resume(player) {
+    player.paused = false;
+    player.playing = true;
+    document.body.classList.remove('sc--paused');
+    document.body.classList.add('sc--playing');
+    player.currentSoundObject.resume();
 }
 
