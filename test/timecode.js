@@ -1,5 +1,4 @@
 import { toMilliseconds, toTimecode} from '../src/utils/timecode';
-import { expect } from 'chai';
 import test from 'tape';
 
 test('Timecode#toMilliseconds', t => {

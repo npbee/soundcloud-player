@@ -5,8 +5,7 @@
   "main": "index.js",
   "directories": {},
   "scripts": {
-    "test": "./node_modules/babel/bin/babel-node ./node_modules/tape/bin/tape 'test/**/*.js' | faucet",
-    "test2": "./node_modules/mocha/bin/mocha --compilers js:babel/register",
+    "test": "babel-node ./node_modules/tape/bin/tape 'test/**/*.js' | faucet",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot",
     "compile": "./node_modules/babel/bin/babel/index.js src --out-dir lib"
   },

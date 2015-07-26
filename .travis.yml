@@ -1,4 +1,4 @@
 language: node_js
 node_js:
     - "iojs"
-install: npm install
+install: npm install babel -g && npm install
