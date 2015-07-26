@@ -1,5 +1,5 @@
 import Player from '../src';
-import { expect } from 'chai';
+import test from 'tape';
 import * as sinon from 'sinon';
 
 let baseParams = {
@@ -8,44 +8,32 @@ let baseParams = {
 
 let noop = function() {};
 
-describe('Player', function() {
+const setup = () => {
+    const fixtures = {};
 
-    var player;
+    fixtures.player = Object.create(Player);
+    fixtures.globalSC = global.SC;
 
-    beforeEach(function() {
-        player = Object.create(Player);
+    return fixtures;
+};
 
-        global.SC = {
-            initialize: noop
-        };
-    });
+const teardown = (fixtures) => {
+    global.SC = fixtures.globalSC;
+};
 
-    afterEach(function() {
-        global.SC === void 0;
-    });
+test('Player initialization', function(t) {
+    const fixtures = setup();
+    const player = fixtures.player;
 
+    t.plan(3);
 
-    describe('Initialization', function() {
+    t.throws(player.init, /SC/, 'An error should be thrown when no global SC object is found.');
 
-        it('Should throw an error when an "SC" global object is not found', function() {
-            global.SC = void 0;
+    global.SC = {};
 
+    t.throws(player.init, /options/, 'An error should be thrown when no options object is found.');
 
-            expect(player.init).to.throw(/SC/);
-        });
+    t.throws(player.init.bind(player, {}), /clientId/, 'An error should be thrown when no clientId option is provided.');
 
-        it('Should throw an error if an options object is not supplied', function() {
-            global.SC = {};
-
-            expect(player.init).to.throw(/options/);
-        });
-
-        it('Should throw an error if no "clientId" parameter is passed', function() {
-            global.SC = {};
-
-            expect(player.init.bind(player, {})).to.throw(/clientId/);
-        });
-
-    });
-
+    teardown(fixtures);
 });
