@@ -5,7 +5,7 @@
   "main": "index.js",
   "directories": {},
   "scripts": {
-    "test": "babel-node ./node_modules/tape/bin/tape 'test/**/*.js' | faucet",
+    "test": "babel-node ./node_modules/tape/bin/tape 'test/**/*.js' | tap-spec",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --hot",
     "compile": "./node_modules/babel/bin/babel/index.js src --out-dir lib"
   },
@@ -23,6 +23,7 @@
     "faucet": "0.0.1",
     "node-libs-browser": "^0.5.2",
     "sinon": "^1.15.4",
+    "tap-spec": "^4.0.2",
     "tape": "^4.0.1",
     "webpack": "^1.10.1",
     "webpack-dev-server": "^1.10.1"
