@@ -80,9 +80,9 @@ function prepareScrubber(player, track) {
     bindScrubberEvents(player);
 }
 
-export function play(player, trackIndex = 0) {
+export function play(player, trackIndex = 0, stopFn = stop) {
     if (player.playing) {
-        stop(player);
+        stopFn(player);
     }
 
     if (player.busy) {

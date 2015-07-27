@@ -86,7 +86,6 @@ let Player = {
         return addTracks.apply(null, [this, ...arguments]);
     }
 
-
 }
 
 export default Player;

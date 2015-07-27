@@ -1,4 +1,4 @@
-import { toMilliseconds, toTimecode} from '../src/utils/timecode';
+import { toMilliseconds, toTimecode} from '../../src/utils/timecode';
 import test from 'tape';
 
 test('Timecode#toMilliseconds', t => {
